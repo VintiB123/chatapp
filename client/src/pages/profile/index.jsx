@@ -87,7 +87,7 @@ const Profile = () => {
 
   const handleImageChange = async (event) => {
     const file = event.target.files[0];
-    console.log(file);
+    // console.log(file);
     if (file) {
       const formData = new FormData();
       formData.append("profile-image", file);
@@ -102,6 +102,7 @@ const Profile = () => {
       reader.onload = () => {
         setImage(reader.result);
       };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -139,13 +140,18 @@ const Profile = () => {
                   className="object-cover w-full h-full bg-black"
                 />
               ) : (
-                <div
-                  className={` uppercase h-32 md:w-48 md:h-48 text-5xl border-[1px] flex items-center justify-center rounded-full ${colors[selectedColor]}`}
+                // <div
+                //   className={` uppercase h-32 w-32 md:w-48 md:h-48 text-5xl border-[1px] flex items-center justify-center rounded-full ${colors[selectedColor]}`}
+                // >
+                //   {firstName
+                //     ? firstName.split("").shift()
+                //     : userInfo.email.split("").shift()}
+                // </div>
+                <AvatarFallback
+                  className={`uppercase text-5xl border-[1px] ${colors[selectedColor]}`}
                 >
-                  {firstName
-                    ? firstName.split("").shift()
-                    : userInfo.email.split("").shift()}
-                </div>
+                  {firstName ? firstName.charAt(0) : userInfo.email.charAt(0)}
+                </AvatarFallback>
               )}
             </Avatar>
             {hovered && (
@@ -166,13 +172,13 @@ const Profile = () => {
               className="hidden"
               onChange={handleImageChange}
               name="profile-image"
-              accept="*.png ,*.jpeg *.jpg *.svg *.webp"
+              accept=".png ,.jpeg ,.jpg ,.svg ,.webp"
             />
-            <img
-              src={`../../../../server/${userInfo?.image}`}
+            {/* <img
+              src={imageUrl}
               className="absolute h-full w-32 md:w-48 md:h-48 rounded-full"
               alt=""
-            />
+            /> */}
           </div>
           <div className="flex min-w-32 md:min-w-64 flex-col gap-5 text-white items-center justify-center">
             <div className="w-full ">
