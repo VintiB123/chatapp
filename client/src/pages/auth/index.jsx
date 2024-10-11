@@ -11,10 +11,11 @@ import { useNavigate } from "react-router-dom";
 import { useAppStore } from "@/store";
 
 const Auth = () => {
+  const { setUserInfo } = useAppStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const { setUserInfo } = useAppStore();
+
   const navigate = useNavigate();
   const handleLogin = async () => {
     if (validateLogin()) {

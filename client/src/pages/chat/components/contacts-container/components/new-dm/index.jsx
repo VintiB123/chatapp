@@ -23,8 +23,10 @@ import { apiClient } from "@/lib/api-client";
 import { SEARCH_CONTACT_ROUTES } from "@/utils/constants";
 import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { useAppStore } from "@/store";
+import { HOST } from "@/utils/constants";
 
 const NewDM = () => {
+  const { setSelectedChatType, setSelectedChatData } = useAppStore();
   const [openNewContactModal, setOpenNewContactModal] = useState(false);
   const [searchedContacts, setSearchedContacts] = useState([]);
 
@@ -34,7 +36,7 @@ const NewDM = () => {
     setSelectedChatData(contact);
     setSearchedContacts([]);
   };
-  const { setSelectedChatType, setSelectedChatData } = useAppStore();
+
   const searchContacts = async (searchTerm) => {
     try {
       if (searchTerm.length > 0) {
@@ -100,7 +102,7 @@ const NewDM = () => {
                           <AvatarImage
                             src={`${HOST}/${contact.image}`}
                             alt="profile"
-                            className="object-cover w-full h-full bg-black"
+                            className="object-cover rounded-full w-full h-full bg-black"
                           />
                         ) : (
                           <div

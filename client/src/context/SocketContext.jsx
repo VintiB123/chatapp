@@ -2,6 +2,8 @@ import { createContext, useContext, useRef, useEffect } from "react";
 import { useAppStore } from "@/store";
 import { io } from "socket.io-client";
 
+import { createChatSlice } from "@/store/slices/chat-slice";
+
 import { HOST } from "@/utils/constants";
 
 const SocketContext = createContext(null);
@@ -10,8 +12,8 @@ export const useSocket = () => {
 };
 
 export const SocketProvider = ({ children }) => {
-  const socket = useRef();
   const { userInfo } = useAppStore();
+  const socket = useRef();
 
   // useEffect(() => {
   //   if (userInfo) {
@@ -50,6 +52,21 @@ export const SocketProvider = ({ children }) => {
         console.log("Disconnected from socket server");
       });
 
+      const handleRecieveMessage = (message) => {
+        const { selectedChatData, selectedChatType, addMessage } =
+          useAppStore.getState();
+
+        if (
+          selectedChatType !== undefined &&
+          (selectedChatData._id === message.sender._id ||
+            selectedChatData._id === message.recipient.id)
+        ) {
+          console.log("message recieved", message);
+          addMessage(message);
+        }
+      };
+
+      socket.current.on("recieveMessage", handleRecieveMessage);
       return () => {
         socket.current.disconnect();
       };
