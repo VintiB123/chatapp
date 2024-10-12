@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useAppStore } from "@/store";
+import moment from "moment";
 
 const MessageContainer = () => {
   const scrollRef = useRef();
@@ -33,7 +34,7 @@ const MessageContainer = () => {
   const renderDMMessages = (message) => (
     <div
       className={`${
-        message.sender === selectedChatData._id ? "text-right" : "text-left"
+        message.sender === selectedChatData._id ? "text-left" : "text-right"
       }`}
     >
       {message.messageType === "text" && (
@@ -47,6 +48,9 @@ const MessageContainer = () => {
           {message.content}
         </div>
       )}
+      <div className="text-xs text-gray-600">
+        {moment(message.timestamp).format("LT")}
+      </div>
     </div>
   );
 
