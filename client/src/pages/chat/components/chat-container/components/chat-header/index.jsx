@@ -2,6 +2,7 @@ import { useAppStore } from "@/store";
 import { RiCloseFill } from "react-icons/ri";
 import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { getColor } from "@/lib/utils";
+import { HOST } from "@/utils/constants";
 const ChatHeader = () => {
   const { closeChat, selectedChatData, selectedChatType } = useAppStore();
 
