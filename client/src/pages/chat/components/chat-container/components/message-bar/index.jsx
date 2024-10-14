@@ -7,9 +7,18 @@ import { GrAttachment } from "react-icons/gr";
 import { IoSend } from "react-icons/io5";
 import { UPLOAD_FILE_ROUTE } from "../../../../../../utils/constants.js";
 import { RiEmojiStickerLine } from "react-icons/ri";
+import { data } from "autoprefixer";
 
 const MessageBar = () => {
-  const { selectedChatType, selectedChatData, userInfo } = useAppStore();
+  const {
+    selectedChatType,
+    selectedChatData,
+    userInfo,
+    setIsUploading,
+    setIsDownloading,
+    setFileUploadProgess,
+    setFileDownloadProgess,
+  } = useAppStore();
   const [message, setMessage] = useState("");
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
   const emojiRef = useRef();
@@ -58,11 +67,16 @@ const MessageBar = () => {
       if (file) {
         const formData = new FormData();
         formData.append("file", file);
+        setIsUploading(true);
         const response = await apiClient.post(UPLOAD_FILE_ROUTE, formData, {
           withCredentials: true,
+          onUploadProgress: (data) => {
+            setFileUploadProgess(Math.round((data * 100) / data.total));
+          },
         });
 
-        if (response.status === 200) {
+        if (response.status === 200 && response.data) {
+          setIsUploading(false);
           if (selectedChatType === "contact") {
             socket.emit("sendMessage", {
               sender: userInfo.id,
@@ -76,6 +90,7 @@ const MessageBar = () => {
         console.log({ file });
       }
     } catch (error) {
+      setIsUploading(false);
       console.error(error);
     }
   };

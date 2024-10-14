@@ -23,8 +23,8 @@ app.use(
   })
 );
 
-app.use("/uploads/profiles", express.static("uploads/profiles"));
-app.use("/uploads/files", express.static("uploads/files"));
+app.use("/uploads/profile", express.static("uploads/profile"));
+app.use("/uploads/file", express.static("uploads/file"));
 
 app.use(cookieParser());
 app.use(express.json());
