@@ -16,49 +16,48 @@ import {
 import { getColor } from "@/lib/utils";
 import Lottie from "react-lottie";
 import { animationDefaultOptions } from "@/lib/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
 import { apiClient } from "@/lib/api-client";
-import { SEARCH_CONTACT_ROUTES } from "@/utils/constants";
+import {
+  GET_ALL_CONTACTS_ROUTE,
+  SEARCH_CONTACT_ROUTES,
+} from "@/utils/constants";
+import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { useAppStore } from "@/store";
 import { HOST } from "@/utils/constants";
+import { createChatSlice } from "@/store/slices/chat-slice";
+import MultipleSelector from "@/components/ui/multiselect";
 
 const CreateChannel = () => {
   const { setSelectedChatType, setSelectedChatData } = useAppStore();
-  const [openNewContactModal, setOpenNewContactModal] = useState(false);
+  const [newChannelModal, setNewChannelModal] = useState(false);
   const [searchedContacts, setSearchedContacts] = useState([]);
-
+  const [allContacts, setAllContacts] = useState([]);
+  const [selectedContacts, setSelectedContacts] = useState([]);
+  const [channelName, setChannelName] = useState("");
   const selectNewContact = (contact) => {
-    setOpenNewContactModal(false);
+    // setOpenNewContactModal(false);
     setSelectedChatType("contact");
     setSelectedChatData(contact);
     setSearchedContacts([]);
   };
 
-  const searchContacts = async (searchTerm) => {
-    try {
-      if (searchTerm.length > 0) {
-        const response = await apiClient.post(
-          SEARCH_CONTACT_ROUTES,
-          {
-            searchTerm,
-          },
-          { withCredentials: true }
-        );
+  useEffect(() => {
+    const getData = async () => {
+      const response = await apiClient.get(GET_ALL_CONTACTS_ROUTE, {
+        withCredentials: true,
+      });
 
-        if (response.status === 200 && response.data.contacts) {
-          setSearchedContacts(response.data.contacts);
-          // console. log(searchedContacts);
-        }
-      } else {
-        setSearchedContacts([]);
-      }
-    } catch (error) {
-      console.log({ error });
-    }
-  };
+      setAllContacts(response.data.contacts);
+    };
+
+    getData();
+  }, []);
+
+  const createChannel = async () => {};
   return (
     <>
       <TooltipProvider>
@@ -66,26 +65,51 @@ const CreateChannel = () => {
           <TooltipTrigger>
             <FaPlus
               className="text-neutral-400 font-light text-opacity-90 text-start hover:text-neutral-100 cursor-pointer transition-all duration-300"
-              onClick={() => setOpenNewContactModal(true)}
+              onClick={() => setNewChannelModal(true)}
             />
           </TooltipTrigger>
           <TooltipContent className="bg-[#1c1b1e] border-none mb-2 p-3 text-white">
-            Select New Contact
+            Create New Channel
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <Dialog open={openNewContactModal} onOpenChange={setOpenNewContactModal}>
+      <Dialog open={newChannelModal} onOpenChange={setNewChannelModal}>
         <DialogContent className="bg-[#181920] border-none w-[400px] h-[400px] text-white flex flex-col ">
           <DialogHeader>
-            <DialogTitle>Please Select a Contact</DialogTitle>
+            <DialogTitle>
+              Please fill up the details for new channel.
+            </DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
           <div>
             <Input
-              placeholder="Search Contacts"
+              placeholder="Channel Name"
               className="rounded-lg p-6 bg-[#2c2e3b]  border-none"
-              onChange={(e) => searchContacts(e.target.value)}
+              onChange={(e) => setChannelName(e.target.value)}
+              value={channelName}
             />
+          </div>
+          <div>
+            <MultipleSelector
+              className="rounded-lg bg-[#2c2e3b] border-none py-2 text-white"
+              defaultOptions={allContacts}
+              placeholder="Search Contacts"
+              value={selectedContacts}
+              onChange={setSelectedContacts}
+              emptyIndicator={
+                <p className="text-center text-lg leading-10 text-gray-600">
+                  No results found.
+                </p>
+              }
+            />
+          </div>
+          <div>
+            <Button
+              className="w-full bg-purple-700 hover:bg-purple-900 transition-all duration-300"
+              onClick={createChannel}
+            >
+              Create Channel
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
